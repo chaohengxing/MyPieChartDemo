@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+
+    <!--图表里面的颜色-->
+    <color name="chart_orange">#FFA500</color>
+    <color name="chart_green">#23BF70</color>
+    <color name="chart_blue">#7155EC</color>
+    <color name="chart_purple">#B09EFF</color>
+    <color name="chart_mblue">#00A2D0</color>
+    <color name="chart_turquoise">#41DBCB</color>
+</resources>
