@@ -7,7 +7,7 @@
     tools:context="com.chx.piechartdemo.MainActivity">
 
 
-    <com.chx.piechartdemo.MyPieChart2
+    <com.chx.piechartdemo.MyPieChart
         android:id="@+id/mypiechart"
         android:layout_width="match_parent"
         android:layout_height="300dp"
