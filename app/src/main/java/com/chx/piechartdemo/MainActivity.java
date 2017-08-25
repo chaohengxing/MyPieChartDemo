@@ -22,12 +22,12 @@ public class MainActivity extends AppCompatActivity implements MyPieChart.OnItem
         myPieChart.setOnItemClickListener(this);
 
         List<MyPieChart.PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(new MyPieChart.PieEntry(1, R.color.chart_orange, true));
-        pieEntries.add(new MyPieChart.PieEntry(2, R.color.chart_green, false));
-        pieEntries.add(new MyPieChart.PieEntry(3, R.color.chart_blue, false));
-        pieEntries.add(new MyPieChart.PieEntry(4, R.color.chart_purple, false));
-        pieEntries.add(new MyPieChart.PieEntry(5, R.color.chart_mblue, false));
-        pieEntries.add(new MyPieChart.PieEntry(6, R.color.chart_turquoise, false));
+        pieEntries.add(new MyPieChart.PieEntry(0, R.color.chart_orange, true));
+        pieEntries.add(new MyPieChart.PieEntry(1, R.color.chart_green, false));
+        pieEntries.add(new MyPieChart.PieEntry(0, R.color.chart_blue, false));
+        pieEntries.add(new MyPieChart.PieEntry(0, R.color.chart_purple, false));
+        pieEntries.add(new MyPieChart.PieEntry(0, R.color.chart_mblue, false));
+        pieEntries.add(new MyPieChart.PieEntry(0, R.color.chart_turquoise, false));
 
         myPieChart.setPieEntries(pieEntries);
 

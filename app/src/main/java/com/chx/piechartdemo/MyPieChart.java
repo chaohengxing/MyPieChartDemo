@@ -77,7 +77,7 @@ public class MyPieChart extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         //计算总值
-        int total = 0;
+        float total = 0;
         for (int i = 0; i < pieEntries.size(); i++) {
             total += pieEntries.get(i).getNumber();
         }
@@ -95,7 +95,12 @@ public class MyPieChart extends View {
         //遍历List<PieEntry> 开始画扇形
         for (int i = 0; i < pieEntries.size(); i++) {
             //计算当前扇形扫过的角度
-            float sweep = 360 * (pieEntries.get(i).getNumber() / total);
+            float sweep;
+            if (total <= 0) {
+                sweep = 360 / pieEntries.size();
+            } else {
+                sweep = 360 * (pieEntries.get(i).getNumber() / total);
+            }
             //设置当前扇形的颜色
             paint.setColor(getResources().getColor(pieEntries.get(i).colorRes));
             //判断当前扇形是否被选中，确定用哪个半径
@@ -109,51 +114,69 @@ public class MyPieChart extends View {
             RectF rectF = new RectF(centerX - radiusT, centerY - radiusT, centerX + radiusT, centerY + radiusT);
             canvas.drawArc(rectF, startC, sweep, true, paint);
 
-            //下面是画扇形外围的 短线和百分数值。
 
-            float arcCenterC = startC + sweep / 2; //当前扇形弧线的中间点和圆心的连线 与 起始角度的夹角
-            float arcCenterX = 0;  //当前扇形弧线的中间点 的坐标 x  以此点作为短线的起始点
-            float arcCenterY = 0;  //当前扇形弧线的中间点 的坐标 y
+            if ((pieEntries.get(i).getNumber() > 0 && total > 0) || (total <= 0 && pieEntries.get(i).getNumber() <= 0)) {
+                //下面是画扇形外围的 短线和百分数值。
+                float arcCenterC = startC + sweep / 2; //当前扇形弧线的中间点和圆心的连线 与 起始角度的夹角
+                float arcCenterX = 0;  //当前扇形弧线的中间点 的坐标 x  以此点作为短线的起始点
+                float arcCenterY = 0;  //当前扇形弧线的中间点 的坐标 y
 
-            float arcCenterX2 = 0; //这两个点作为短线的结束点
-            float arcCenterY2 = 0;
-            //百分百数字的格式
-            DecimalFormat numberFormat = new DecimalFormat("00.00");
-            paint.setColor(Color.BLACK);
+                float arcCenterX2 = 0; //这两个点作为短线的结束点
+                float arcCenterY2 = 0;
+                //百分百数字的格式
+                DecimalFormat numberFormat = new DecimalFormat("00.00");
+                paint.setColor(Color.BLACK);
 
-            //分象限 利用三角函数 来求出每个短线的起始点和结束点，并画出短线和百分比。
-            //具体的计算方法看下面图示介绍
-            if (arcCenterC >= 0 && arcCenterC < 90) {
-                arcCenterX = (float) (centerX + radiusT * Math.cos(arcCenterC * Math.PI / 180));
-                arcCenterY = (float) (centerY + radiusT * Math.sin(arcCenterC * Math.PI / 180));
-                arcCenterX2 = (float) (arcCenterX + DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
-                arcCenterY2 = (float) (arcCenterY + DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
-                canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
-                canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", arcCenterX2, arcCenterY2 + paint.getTextSize() / 2, paint);
-            } else if (arcCenterC >= 90 && arcCenterC < 180) {
-                arcCenterC = 180 - arcCenterC;
-                arcCenterX = (float) (centerX - radiusT * Math.cos(arcCenterC * Math.PI / 180));
-                arcCenterY = (float) (centerY + radiusT * Math.sin(arcCenterC * Math.PI / 180));
-                arcCenterX2 = (float) (arcCenterX - DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
-                arcCenterY2 = (float) (arcCenterY + DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
-                canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
-                canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", (float) (arcCenterX2 - paint.getTextSize() * 3.5), arcCenterY2 + paint.getTextSize() / 2, paint);
-            } else if (arcCenterC >= 180 && arcCenterC < 270) {
-                arcCenterC = 270 - arcCenterC;
-                arcCenterX = (float) (centerX - radiusT * Math.sin(arcCenterC * Math.PI / 180));
-                arcCenterY = (float) (centerY - radiusT * Math.cos(arcCenterC * Math.PI / 180));
-                arcCenterX2 = (float) (arcCenterX - DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
-                arcCenterY2 = (float) (arcCenterY - DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
-                canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
-                canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", (float) (arcCenterX2 - paint.getTextSize() * 3.5), arcCenterY2, paint);
-            } else if (arcCenterC >= 270 && arcCenterC < 360) {
-                arcCenterC = 360 - arcCenterC;
-                arcCenterX = (float) (centerX + radiusT * Math.cos(arcCenterC * Math.PI / 180));
-                arcCenterY = (float) (centerY - radiusT * Math.sin(arcCenterC * Math.PI / 180));
-                arcCenterX2 = (float) (arcCenterX + DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
-                arcCenterY2 = (float) (arcCenterY - DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
-                canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
-                canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", arcCenterX2, arcCenterY2, paint);
+                //分象限 利用三角函数 来求出每个短线的起始点和结束点，并画出短线和百分比。
+                //具体的计算方法看下面图示介绍
+                if (arcCenterC >= 0 && arcCenterC < 90) {
+                    arcCenterX = (float) (centerX + radiusT * Math.cos(arcCenterC * Math.PI / 180));
+                    arcCenterY = (float) (centerY + radiusT * Math.sin(arcCenterC * Math.PI / 180));
+                    arcCenterX2 = (float) (arcCenterX + DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
+                    arcCenterY2 = (float) (arcCenterY + DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
+                    canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
+                    if (total <= 0) {
+                        canvas.drawText(numberFormat.format(0) + "%", arcCenterX2, arcCenterY2 + paint.getTextSize() / 2, paint);
+                    } else {
+                        canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", arcCenterX2, arcCenterY2 + paint.getTextSize() / 2, paint);
+                    }
+                } else if (arcCenterC >= 90 && arcCenterC < 180) {
+                    arcCenterC = 180 - arcCenterC;
+                    arcCenterX = (float) (centerX - radiusT * Math.cos(arcCenterC * Math.PI / 180));
+                    arcCenterY = (float) (centerY + radiusT * Math.sin(arcCenterC * Math.PI / 180));
+                    arcCenterX2 = (float) (arcCenterX - DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
+                    arcCenterY2 = (float) (arcCenterY + DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
+                    canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
+                    if (total <= 0) {
+                        canvas.drawText(numberFormat.format(0) + "%", (float) (arcCenterX2 - paint.getTextSize() * 3.5), arcCenterY2 + paint.getTextSize() / 2, paint);
+                    } else {
+                        canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", (float) (arcCenterX2 - paint.getTextSize() * 3.5), arcCenterY2 + paint.getTextSize() / 2, paint);
+                    }
+                } else if (arcCenterC >= 180 && arcCenterC < 270) {
+                    arcCenterC = 270 - arcCenterC;
+                    arcCenterX = (float) (centerX - radiusT * Math.sin(arcCenterC * Math.PI / 180));
+                    arcCenterY = (float) (centerY - radiusT * Math.cos(arcCenterC * Math.PI / 180));
+                    arcCenterX2 = (float) (arcCenterX - DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
+                    arcCenterY2 = (float) (arcCenterY - DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
+                    canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
+                    if (total <= 0) {
+                        canvas.drawText(numberFormat.format(0) + "%", (float) (arcCenterX2 - paint.getTextSize() * 3.5), arcCenterY2, paint);
+                    } else {
+                        canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", (float) (arcCenterX2 - paint.getTextSize() * 3.5), arcCenterY2, paint);
+                    }
+                } else if (arcCenterC >= 270 && arcCenterC < 360) {
+                    arcCenterC = 360 - arcCenterC;
+                    arcCenterX = (float) (centerX + radiusT * Math.cos(arcCenterC * Math.PI / 180));
+                    arcCenterY = (float) (centerY - radiusT * Math.sin(arcCenterC * Math.PI / 180));
+                    arcCenterX2 = (float) (arcCenterX + DensityUtils.dp2px(getContext(), 10) * Math.cos(arcCenterC * Math.PI / 180));
+                    arcCenterY2 = (float) (arcCenterY - DensityUtils.dp2px(getContext(), 10) * Math.sin(arcCenterC * Math.PI / 180));
+                    canvas.drawLine(arcCenterX, arcCenterY, arcCenterX2, arcCenterY2, paint);
+                    if (total <= 0) {
+                        canvas.drawText(numberFormat.format(0) + "%", arcCenterX2, arcCenterY2, paint);
+                    } else {
+                        canvas.drawText(numberFormat.format(pieEntries.get(i).getNumber() / total * 100) + "%", arcCenterX2, arcCenterY2, paint);
+                    }
+                }
             }
             //将每个扇形的起始角度 和 结束角度 放入对应的对象
             pieEntries.get(i).setStartC(startC);
@@ -232,7 +255,7 @@ public class MyPieChart extends View {
         private float endC;       //对应扇形结束角度
 
         public PieEntry(float number, int colorRes, boolean selected) {
-            this.number = number > 0 ? number : 1; //防止分母为零
+            this.number = number; //防止分母为零
             this.colorRes = colorRes;
             this.selected = selected;
         }
